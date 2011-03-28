@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/ruby
+# just to remind you of some useful environment variables
+# see Help / Environment Variables for the full list
+#echo File: "$TM_FILEPATH"
+#echo Word: "$TM_CURRENT_WORD"
+#echo Selection: "$TM_SELECTED_TEXT"
+
+text = '';
+File.open(ENV['TM_FILEPATH'], 'r') {|f|
+	while (line = f.gets)
+		text = text + line
+	end
+
+	# process void elements (look up here: http://dev.w3.org/html5/spec/syntax.html#void-elements)
+	text = text.gsub(/&lt;(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^&gt;]*?)[ ]*\/?&gt;/im, '&lt;\1\2&gt;')
+	text = text.gsub(/&lt;(script(?:[^&gt;])*?)[ ]?type="text\/javascript"([^&gt;]*)&gt;\/\/&lt;!\[CDATA\[(.*?)\/\/\]\]&gt;(&lt;\/script&gt;)/im, '&lt;\1\2&gt;\3\4')
+	f.close
+}
+
+$stdout.print(text)
+
+</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>@h</string>
+	<key>name</key>
+	<string>html5ify tags</string>
+	<key>output</key>
+	<string>replaceSelectedText</string>
+	<key>uuid</key>
+	<string>9E8FDDC4-A22C-4883-B446-F754DDFA706D</string>
+</dict>
+</plist>
