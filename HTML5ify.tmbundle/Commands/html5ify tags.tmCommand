@@ -13,16 +13,20 @@
 #echo Selection: "$TM_SELECTED_TEXT"
 
 text = '';
-File.open(ENV['TM_FILEPATH'], 'r') {|f|
-	while (line = f.gets)
-		text = text + line
-	end
+if (ENV['TM_SELECTED_TEXT']) then
+	text = ENV['TM_SELECTED_TEXT']
+else
+	File.open(ENV['TM_FILEPATH'], 'r') {|f|
+		while (line = f.gets)
+			text = text + line
+		end
+		f.close
+	}
+end
 
-	# process void elements (look up here: http://dev.w3.org/html5/spec/syntax.html#void-elements)
-	text = text.gsub(/&lt;(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^&gt;]*?)[ ]*\/?&gt;/im, '&lt;\1\2&gt;')
-	text = text.gsub(/&lt;(script(?:[^&gt;])*?)[ ]?type="text\/javascript"([^&gt;]*)&gt;\/\/&lt;!\[CDATA\[(.*?)\/\/\]\]&gt;(&lt;\/script&gt;)/im, '&lt;\1\2&gt;\3\4')
-	f.close
-}
+# process void elements (look up here: http://dev.w3.org/html5/spec syntax.html#void-elements)
+text = text.gsub(/&lt;(area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)([^&gt;]*?)[ ]*\/?&gt;/im, '&lt;\1\2&gt;')
+text = text.gsub(/&lt;(script(?:[^&gt;])*?)[ ]?type="text\/javascript"([^&gt;]*)&gt;\/\/&lt;!\[CDATA\[(.*?)\/\/\]\]&gt;(&lt;\/script&gt;)/im, '&lt;\1\2&gt;\3\4')
 
 $stdout.print(text)
 
